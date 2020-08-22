@@ -6,6 +6,7 @@ import BtnOperator from './components/BtnOperator/BtnOperator.component';
 import ClearBtn from './components/ClearBtn/ClearBtn.component';
 import DecimalBtn from './components/DecimalBtn/DecimalBtn.component';
 import calculate from './Utils/calculate.util';
+import queueFactory from './Utils/queue.util';
 
 class App extends React.Component {
   constructor(props) {
@@ -14,7 +15,7 @@ class App extends React.Component {
       input: 0,
       lastClicked: '',
       decimalClicked: false,
-      arr: []
+      arr: queueFactory()
     }
 
     this.handleInputNum = this.handleInputNum.bind(this);
@@ -28,7 +29,7 @@ class App extends React.Component {
       input: '0',
       lastClicked: '',
       decimalClicked: false,
-      arr: []
+      arr: queueFactory()
     });
   }
 
@@ -76,7 +77,7 @@ class App extends React.Component {
     this.setState({
       input: result,
       lastClicked: 'equalto',
-      arr: [result]
+      arr: queueFactory([result])
     });
   }
 

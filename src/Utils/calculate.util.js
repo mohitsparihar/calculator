@@ -1,10 +1,10 @@
-function calculate(arr) {
+function calculate(q) { // q = queue
     let a = false;
     let b = false;
     let o = false;
     let m = false;
-    while (arr.length) {
-      let n = arr.shift();
+    while (q.length()) {
+      let n = q.pop();
       console.log(n);
       if (a === false && typeof +n === "number") {
         a = n;
