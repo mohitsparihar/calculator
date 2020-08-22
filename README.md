@@ -1,3 +1,7 @@
+# JavaScript Calculator
+
+This is the code for JavaScript Calculator. The program is written with the help of the ReactJS library.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

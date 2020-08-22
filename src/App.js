@@ -6,14 +6,12 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      input: '0',
-      operand1: '',
-      operand2: '',
-      operator: '',
-      result: '',
+      input: 0,
       lastClicked: '',
-      decimalClicked: false
+      decimalClicked: false,
+      arr: []
     }
+
     this.handleInputNum = this.handleInputNum.bind(this);
     this.handleOperator = this.handleOperator.bind(this);
     this.handleEqualTo = this.handleEqualTo.bind(this);
@@ -23,12 +21,9 @@ class App extends React.Component {
   handleClear(event) {
     this.setState({
       input: '0',
-      operand1: '',
-      operand2: '',
-      operator: '',
-      result: '',
       lastClicked: '',
-      decimalClicked: false
+      decimalClicked: false,
+      arr: []
     });
   }
 
@@ -50,91 +45,100 @@ class App extends React.Component {
   }
 
   handleOperator(event) {
-    if (this.state.lastClicked === "operator") {
-      if (event.target.value === '-') {
-        this.setState({
-          input: '-',
-          lastClicked: "number"
-        })
-        return;
-      } else {
-        this.setState({
-          operator: event.target.value,
-          lastClicked: "operator",
-          decimalClicked: false
-        })
-        return;
-      }
-    } else if (this.state.input === '-') {
+    let tempArr = this.state.arr;
+    if (this.state.lastClicked === "number") {
+      tempArr.push(this.state.input);
       this.setState({
-        input: this.state.operand1,
-        operator: event.target.value,
-        lastClicked: "operator"
+        arr: tempArr
       })
-      return;
+
     }
 
-    if (this.state.operand1 && this.state.operator) {
-      this.setState({
-        operand1: this.calculate(),
-        operator: event.target.value
-      })
-    } else {
-      this.setState({
-        operand1: this.state.input,
-        operator: event.target.value
-      })
-    }
-
+    tempArr.push(event.target.value)
     this.setState({
+      arr: tempArr,
+      decimalClicked: false,
       lastClicked: 'operator',
-      decimalClicked: false
-    });
-    console.log(this.state);
-  }
-
-  calculate() {
-    let result = 0
-    let operand1 = +this.state.operand1;
-    let operand2 = +this.state.input;
-
-    switch (this.state.operator) {
-      case '+':
-        result = operand1 + operand2;
-        break;
-      case '-':
-        result = operand1 - operand2;
-        break;
-      case '*':
-        result = operand1 * operand2;
-        break;
-      case '/':
-        result = operand1 / operand2;
-        break;
-    }
-
-    return result;
+    })
   }
 
   handleEqualTo(event) {
-    let result = this.calculate()
+    let calArr = this.state.arr;
+    calArr.push(this.state.input);
+    console.log(calArr);
+    let result = calculate(calArr);
 
     this.setState({
       input: result,
       lastClicked: 'equalto',
-      operator: ''
+      arr: [result]
     });
+
+    function calculate(arr) {
+      let a = false;
+      let b = false;
+      let o = false;
+      let m = false;
+      while (arr.length) {
+        let n = arr.shift();
+        console.log(n);
+        if (a === false && typeof +n === "number") {
+          a = n;
+        } else {
+          if (['+', '-', '*', '/'].includes(n)) {
+            console.log('operator: ' + n);
+            if (o !== false && n === '-') {
+              m = n;
+            } else {
+              o = n;
+              m = false;
+            }
+
+            console.log('operator: ' + n);
+          } else if (a !== false && typeof +n === "number") {
+            b = m ? m + n : n;
+            m = false;
+            a = operation(+a, +b, o);
+            o = false;
+          }
+        }
+      }
+      return a;
+    }
+
+    function operation(operand1, operand2, operator) {
+      let result = 0
+      console.log(operand1, operand2, operator);
+      switch (operator) {
+        case '+':
+          result = operand1 + operand2;
+          break;
+        case '-':
+          result = operand1 - operand2;
+          break;
+        case '*':
+          result = operand1 * operand2;
+          break;
+        case '/':
+          result = operand1 / operand2;
+          break;
+      }
+
+      return result;
+    }
   }
 
   handleDecimal() {
     if (!this.state.decimalClicked) {
       this.setState({
-        input: this.state.input + '.',
+        input: this.state.lastClicked === 'operator' ? '0.': this.state.input + '.',
         decimalClicked: true,
         lastClicked: "decimal"
       })
     }
   }
+
+
 
   render() {
     const btnNums = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'].map((el, i) => {
@@ -172,31 +176,31 @@ class App extends React.Component {
 
 const BtnNum = (props) => {
   return (
-    <button className="btn number" id={props.idProp} style={{gridArea:props.idProp}} value={props.value} onClick={props.handler}>{props.value}</button>
+    <button className="btn number" id={props.idProp} style={{ gridArea: props.idProp }} value={props.value} onClick={props.handler}>{props.value}</button>
   )
 };
 
 const BtnOperator = (props) => {
   return (
-    <button className="btn operator" id={props.idProp} style={{gridArea:props.idProp}} value={props.value} onClick={props.handler}>{props.value}</button>
+    <button className="btn operator" id={props.idProp} style={{ gridArea: props.idProp }} value={props.value} onClick={props.handler}>{props.value}</button>
   )
 }
 
 const BtnEqualTo = (props) => {
   return (
-    <button id="equals" style={{gridArea: "equals"}} className="btn operator" onClick={props.handler}>=</button>
+    <button id="equals" style={{ gridArea: "equals" }} className="btn operator" onClick={props.handler}>=</button>
   )
 }
 
 const DecimalBtn = (props) => {
   return (
-    <button className="btn operator" id="decimal" style={{gridArea: "decimal"}} onClick={props.handler}>.</button>
+    <button className="btn operator" id="decimal" style={{ gridArea: "decimal" }} onClick={props.handler}>.</button>
   )
 }
 
 const ClearBtn = (props) => {
   return (
-    <button className="btn" id="clear" style={{gridArea: "clear"}} onClick={props.handler}>C</button>
+    <button className="btn" id="clear" style={{ gridArea: "clear" }} onClick={props.handler}>C</button>
   )
 }
 
